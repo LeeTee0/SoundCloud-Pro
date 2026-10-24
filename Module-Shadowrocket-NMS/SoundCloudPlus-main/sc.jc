@@ -1,64 +1,52 @@
-
 var body = $response.body;
 var obj = JSON.parse(body);
 
+// === GIỚI HẠN URL (chỉ chạy endpoint plan của SoundCloud) ===
+var url = $request.url;
+if (!url.includes("soundcloud.com") || !url.includes("/plan")) {
+    $done({});
+    return;
+}
+
+// === PLAN (iOS) ===
 obj.plan = {
-    "vendor": "apple",
+    "vendor": "apple",              // iOS → giữ "apple"
     "id": "high_tier",
     "manageable": true,
     "plan_upsells": [],
-    "plan_id": "go-pro",
+    "plan_id": "artist-pro",
     "upsells": [],
-    "plan_name": "SoundCloud Artist Pro+"
+    "plan_name": "SoundCloud Artist Pro+",
+    "is_active": true,
+    "is_trial": false,
+    "expiration_date": "2099-12-31T23:59:59Z",
+    "renewal_date": "2099-12-31T23:59:59Z"
 };
 
-obj.features = [
-    {
-        "name": "offline_sync",
-        "enabled": true,
-        "plans": ["mid_tier", "high_tier"]
-    },
-    {
-        "name": "no_audio_ads",
-        "enabled": true,
-        "plans": ["mid_tier", "high_tier"]
-    },
-    {
-        "name": "hq_audio",
-        "enabled": true,
-        "plans": ["high_tier"]
-    },
-    {
-        "name": "system_playlist_in_library",
-        "enabled": true,
-        "plans": []
-    },
-    {
-        "name": "ads_krux",
-        "enabled": false,
-        "plans": []
-    },
-    {
-        "name": "new_home",
-        "enabled": true,
-        "plans": []
-    },
-    {
-        "name": "spotlight",
-        "enabled": false,
-        "plans": []
-    },
-    {
-        "name": "unlimited_upload",
-        "enabled": true,
-        "plans": ["high_tier"]
-    },
-    {
-        "name": "artist_pro_badge",
-        "enabled": true,
-        "plans": ["high_tier"]
-    }
+// === FEATURES (merge thay vì ghi đè) ===
+var newFeatures = [
+    { "name": "offline_sync", "enabled": true, "plans": ["mid_tier", "high_tier"] },
+    { "name": "no_audio_ads", "enabled": true, "plans": ["mid_tier", "high_tier"] },
+    { "name": "hq_audio", "enabled": true, "plans": ["high_tier"] },
+    { "name": "system_playlist_in_library", "enabled": true, "plans": [] },
+    { "name": "ads_krux", "enabled": false, "plans": [] },
+    { "name": "new_home", "enabled": true, "plans": [] },
+    { "name": "spotlight", "enabled": false, "plans": [] },
+    { "name": "unlimited_upload", "enabled": true, "plans": ["high_tier"] },
+    { "name": "artist_pro_badge", "enabled": true, "plans": ["high_tier"] }
 ];
+
+var existing = obj.features || [];
+var merged = existing.map(function(f) {
+    var override = newFeatures.find(function(n) { return n.name === f.name; });
+    return override || f;
+});
+newFeatures.forEach(function(n) {
+    if (!merged.find(function(f) { return f.name === n.name; })) {
+        merged.push(n);
+    }
+});
+obj.features = merged;
 
 body = JSON.stringify(obj);
 $done({ body: body });
