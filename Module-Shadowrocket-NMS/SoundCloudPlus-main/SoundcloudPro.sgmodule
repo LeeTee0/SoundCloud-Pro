@@ -7,4 +7,6 @@
 SoundCloudArtistPro = type=http-response,pattern=^https:\/\/api-mobile\.soundcloud\.com\/configuration\/ios$,requires-body=1,script-path=https://raw.githubusercontent.com/LeeTee0/SoundCloud-Pro/refs/heads/main/Module-Shadowrocket-NMS/SoundCloudPlus-main/sc.jc
 
 [MITM]
-hostname = api-mobile.soundcloud.com
+hostname = *.soundcloud.com
+api-v2.soundcloud.com
+api.soundcloud.com
