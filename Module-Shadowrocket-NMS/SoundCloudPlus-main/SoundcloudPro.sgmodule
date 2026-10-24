@@ -1,12 +1,9 @@
-
 #!name=SoundCloud Artist Pro+ by Lee Quang Thang
 #!desc=SoundCloud response modification
 #!author=Lee Quang Thang
 
 [Script]
-SoundCloudArtistPro = type=http-response,pattern=^https:\/\/api-mobile\.soundcloud\.com\/configuration\/ios$,requires-body=1,script-path=https://raw.githubusercontent.com/LeeTee0/SoundCloud-Pro/refs/heads/main/Module-Shadowrocket-NMS/SoundCloudPlus-main/sc.jc
+SoundCloudArtistPro = type=http-response,pattern=^https:\/\/api(-mobile|-v2)?\.soundcloud\.com\/.*(plan|configuration\/ios).*$,requires-body=1,script-path=https://raw.githubusercontent.com/LeeTee0/SoundCloud-Pro/refs/heads/main/Module-Shadowrocket-NMS/SoundCloudPlus-main/sc.jc
 
 [MITM]
-hostname = *.soundcloud.com
-api-v2.soundcloud.com
-api.soundcloud.com
+hostname = *.soundcloud.com, api-mobile.soundcloud.com, api-v2.soundcloud.com, api.soundcloud.com
