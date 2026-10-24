@@ -1,9 +1,0 @@
-#!name=SoundCloud Artist Pro+ by Lee Quang Thang
-#!desc=SoundCloud response modification script
-#!author=Lee Quang Thang
-
-[Script]
-SoundCloudArtistPro = type=http-response,pattern=^https:\/\/api-mobile\.soundcloud\.com\/configuration\/ios$,requires-body=1,script-path=https://raw.githubusercontent.com/LeeTee0/SoundCloud-Pro/refs/heads/main/sc.js
-
-[MITM]
-hostname = %APPEND% api-mobile.soundcloud.com
