@@ -1,52 +1,89 @@
-var body = $response.body;
-var obj = JSON.parse(body);
+/*
+ * SoundCloud Artist Pro+ — sc.jc
+ * Author: Lee Quang Thang
+ * Target: api(-mobile|-v2).soundcloud.com/(me/plan | configuration/ios)
+ */
 
-// === GIỚI HẠN URL (chỉ chạy endpoint plan của SoundCloud) ===
-var url = $request.url;
-if (!url.includes("soundcloud.com") || !url.includes("/plan")) {
+var body = $response.body;
+var obj;
+
+try {
+    obj = JSON.parse(body);
+} catch (e) {
     $done({});
     return;
 }
 
-// === PLAN (iOS) ===
-obj.plan = {
-    "vendor": "apple",              // iOS → giữ "apple"
-    "id": "high_tier",
-    "manageable": true,
-    "plan_upsells": [],
-    "plan_id": "artist-pro",
-    "upsells": [],
-    "plan_name": "SoundCloud Artist Pro+",
-    "is_active": true,
-    "is_trial": false,
-    "expiration_date": "2099-12-31T23:59:59Z",
-    "renewal_date": "2099-12-31T23:59:59Z"
-};
+if (!obj || typeof obj !== "object") {
+    $done({});
+    return;
+}
 
-// === FEATURES (merge thay vì ghi đè) ===
-var newFeatures = [
-    { "name": "offline_sync", "enabled": true, "plans": ["mid_tier", "high_tier"] },
-    { "name": "no_audio_ads", "enabled": true, "plans": ["mid_tier", "high_tier"] },
-    { "name": "hq_audio", "enabled": true, "plans": ["high_tier"] },
-    { "name": "system_playlist_in_library", "enabled": true, "plans": [] },
-    { "name": "ads_krux", "enabled": false, "plans": [] },
-    { "name": "new_home", "enabled": true, "plans": [] },
-    { "name": "spotlight", "enabled": false, "plans": [] },
-    { "name": "unlimited_upload", "enabled": true, "plans": ["high_tier"] },
-    { "name": "artist_pro_badge", "enabled": true, "plans": ["high_tier"] }
-];
+// ============================================================
+// 1. PLAN
+// ============================================================
+if (obj.plan !== undefined) {
+    obj.plan = {
+        "vendor": "apple",
+        "id": "high_tier",
+        "manageable": true,
+        "plan_upsells": [],
+        "plan_id": "artist-pro",
+        "upsells": [],
+        "plan_name": "SoundCloud Artist Pro+",
+        "is_active": true,
+        "is_trial": false,
+        "expiration_date": "2099-12-31T23:59:59Z",
+        "renewal_date": "2099-12-31T23:59:59Z"
+    };
+}
 
-var existing = obj.features || [];
-var merged = existing.map(function(f) {
-    var override = newFeatures.find(function(n) { return n.name === f.name; });
-    return override || f;
-});
-newFeatures.forEach(function(n) {
-    if (!merged.find(function(f) { return f.name === n.name; })) {
-        merged.push(n);
+// ============================================================
+// 2. FEATURES (merge, không ghi đè)
+// ============================================================
+if (obj.features !== undefined && Array.isArray(obj.features)) {
+    var newFeatures = [
+        { "name": "offline_sync", "enabled": true, "plans": ["mid_tier", "high_tier"] },
+        { "name": "no_audio_ads", "enabled": true, "plans": ["mid_tier", "high_tier"] },
+        { "name": "hq_audio", "enabled": true, "plans": ["high_tier"] },
+        { "name": "system_playlist_in_library", "enabled": true, "plans": [] },
+        { "name": "ads_krux", "enabled": false, "plans": [] },
+        { "name": "new_home", "enabled": true, "plans": [] },
+        { "name": "spotlight", "enabled": false, "plans": [] },
+        { "name": "unlimited_upload", "enabled": true, "plans": ["high_tier"] },
+        { "name": "artist_pro_badge", "enabled": true, "plans": ["high_tier"] }
+    ];
+
+    var existing = obj.features || [];
+    var merged = existing.map(function (f) {
+        var override = null;
+        for (var i = 0; i < newFeatures.length; i++) {
+            if (newFeatures[i].name === f.name) { override = newFeatures[i]; break; }
+        }
+        return override || f;
+    });
+
+    newFeatures.forEach(function (n) {
+        var found = false;
+        for (var j = 0; j < merged.length; j++) {
+            if (merged[j].name === n.name) { found = true; break; }
+        }
+        if (!found) merged.push(n);
+    });
+
+    obj.features = merged;
+}
+
+// ============================================================
+// 3. Nếu response là /configuration/ios (không có plan/features)
+//    → thử gắn plan + features vào root nếu app đọc từ đây
+// ============================================================
+if (obj.plan === undefined && obj.features === undefined) {
+    // Một số bản SoundCloud đọc plan từ config → thử inject
+    if (obj.user_plan === undefined && obj.subscription === undefined) {
+        // Không đụng gì — tránh phá config
     }
-});
-obj.features = merged;
+}
 
 body = JSON.stringify(obj);
 $done({ body: body });
