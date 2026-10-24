@@ -1,12 +1,12 @@
-#!name=SoundCloud Go+ - Nightmarket
-#!desc=Unlock SoundCloud Go+ | Script by Marol | Module by Nightmarket
-#!author=Nightmarket
-#!discord=https://discord.gg/juY9tw5AJY
+#!name= SoundCloud Artist Pro+ by Lee Quang Thang
+#!desc=Unlock SoundCloud Artist Pro+ | Script by Lee Quang Thang | Module by  Lee Quang Thang
+#!author= Lee Quang Thang
+
 
 [Script]
-# SoundCloud Go+
+# SoundCloud Artist Pro+
 #hostname = api-mobile.soundcloud.com
-SoundCloudArtistPro = type=http-response,pattern=^https:\/\/api-mobile\.soundcloud\.com\/configuration\/ios$,requires-body=1,script-path=https://raw.githubusercontent.com/NightmarketServer/SoundCloudPlus/refs/heads/main/sc.js
+SoundCloudArtistPro = type=http-response,pattern=^https:\/\/api-mobile\.soundcloud\.com\/configuration\/ios$,requires-body=1,script-path=https://raw.githubusercontent.com/LeeTee0/SoundCloud-Pro/refs/heads/main/sc..jc
 
 [MITM]
 hostname = %APPEND% api-mobile.soundcloud.com
