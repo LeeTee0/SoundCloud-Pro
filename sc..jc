@@ -7,9 +7,9 @@ obj.plan = {
     "id": "high_tier",
     "manageable": true,
     "plan_upsells": [],
-    "plan_id": "go-plus",
+    "plan_id": "go-pro",
     "upsells": [],
-    "plan_name": "SoundCloud Go+"
+    "plan_name": "SoundCloud Artist Pro+"
 };
 
 obj.features = [
